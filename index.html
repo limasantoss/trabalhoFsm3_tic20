@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Estatísticas</title>
+</head>
+<body>
+
+<h1>Estatísticas</h1>
+
+<div id="dadosAtuais">
+  <p><strong>Total:</strong> <span id="total">0</span></p>
+  <p><strong>Vitórias:</strong> <span id="vitorias">0</span></p>
+</div>
+
+<h2>Atualizar dados</h2>
+<form id="formAtualizar">
+  <label for="totalInput">Total:</label>
+  <input type="number" id="totalInput" name="total" min="0" required />
+  <br /><br />
+  <label for="vitoriasInput">Vitórias:</label>
+  <input type="number" id="vitoriasInput" name="vitorias" min="0" required />
+  <br /><br />
+  <button type="submit">Atualizar</button>
+</form>
+
+<script>
+async function carregarDados() {
+  const res = await fetch('http://localhost:3000/estatisticas');
+  const dados = await res.json();
+  document.getElementById('total').textContent = dados.total || 0;
+  document.getElementById('vitorias').textContent = dados.vitorias || 0;
+}
+
+document.getElementById('formAtualizar').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const total = Number(document.getElementById('totalInput').value);
+  const vitorias = Number(document.getElementById('vitoriasInput').value);
+
+  const res = await fetch('http://localhost:3000/estatisticas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ total, vitorias }),
+  });
+
+  if (res.ok) {
+    alert('Dados atualizados com sucesso!');
+    carregarDados(); 
+  } else {
+    alert('Erro ao atualizar dados');
+  }
+});
+
+
+carregarDados();
+</script>
+
+</body>
+</html>
